@@ -1,4 +1,4 @@
 /src/.vscode/
 .vscode/
 .DS_Store
-.*txt
+*.txt
