@@ -1,0 +1,61 @@
+Compiling for UOV-I
+
+**************** Timing masked linear equations solver *******************
+
+Masking order: 1
+
+* Avg speed masked linear equations solver via multiplicative shares 386340.0 cycles.
+
+* Avg speed masked linear equations solver via additive shares: 300998.0 cycles.
+
+*********************************************************
+
+
+* ------------------- Timing unmasked ov-pkc-Ip keygen -------------------
+
+* Avg speed unmasked keygen: 4769620.0 cycles.
+
+****************** Timing masked ov-pkc ******************
+
+Masking order: 1
+
+* Avg speed masked keygen: 13538512.0 cycles.
+
+* ------------------- Timing unmasked ov-pkc-Ip sign -------------------
+
+* Avg speed unmasked signing: 101380.0 cycles.
+
+* Avg speed masked signing: 602734.0 cycles.
+
+*********************************************************
+
+
+**************** Timing masked linear equations solver *******************
+
+Masking order: 2
+
+* Avg speed masked linear equations solver via multiplicative shares 634316.0 cycles.
+
+* Avg speed masked linear equations solver via additive shares: 583052.0 cycles.
+
+*********************************************************
+
+
+* ------------------- Timing unmasked ov-pkc-Ip keygen -------------------
+
+* Avg speed unmasked keygen: 4833260.0 cycles.
+
+****************** Timing masked ov-pkc ******************
+
+Masking order: 2
+
+* Avg speed masked keygen: 26168934.0 cycles.
+
+* ------------------- Timing unmasked ov-pkc-Ip sign -------------------
+
+* Avg speed unmasked signing: 101600.0 cycles.
+
+* Avg speed masked signing: 1153364.0 cycles.
+
+*********************************************************
+
