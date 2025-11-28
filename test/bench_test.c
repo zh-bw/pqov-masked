@@ -186,9 +186,23 @@ void timing_masked_ov(){
     puts("\n*********************************************************\n");
 }
 
+void timing_randomness(){
+    uint8_t r;
+    r = rand8();
+
+    start = cpucycles();
+    for (int i = 0; i < 20000; i++){
+        r = rand8();
+    }
+    stop = cpucycles();
+    printf("\n* ------------------- Timing randomness -------------------\n");
+    printf("\n* Avg speed randomness: %.1f cycles.\n", (double)(stop-start)/(20000));
+}
+
 
 int main() {
-    timing_gadgets();
-    timing_masked_ov();
+    // timing_gadgets();
+    // timing_masked_ov();
+    timing_randomness();
     return 0;
 }
