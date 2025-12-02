@@ -28,6 +28,8 @@ void gf256mat_add(uint8_t *r, const uint8_t *mat_A, const uint8_t *mat_B,
 
 /// @brief Inversion of a square matrix, in GF(256)
 unsigned gf256mat_inv(uint8_t *A, uint8_t *A_inv, unsigned n);
+// Inversion of a square matrix, non-const version
+unsigned gf256mat_inv_nonconst(uint8_t *A, uint8_t *A_inv, unsigned n);
 
 // generate a random invertible square matrix
 void gf256mat_gen_upper(uint8_t *mat, unsigned n);

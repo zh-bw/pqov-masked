@@ -169,7 +169,7 @@ void masked_linear_equation_solver_rankcheck(Masked *masked_vec_r, const Masked_
     
     // A2M_rankcheck(matC, &matR, masked_matA, _O_BYTE, _O_BYTE);
     A2M_rankcheck(matC, &matR, &matU, masked_matA, _O_BYTE, _O_BYTE);
-    ok = gf256mat_inv(matC, matC_inv, _O_BYTE);
+    ok = gf256mat_inv_nonconst(matC, matC_inv, _O_BYTE);
 
     // uint8_t masked_vec_temp[_O_BYTE * N_SHARES];
     
@@ -203,7 +203,7 @@ unsigned masked_linear_equation_solver(Masked *masked_vec_r, const Masked_matrix
 
     
     A2M_rankcheck(matC, &matR, &matU, masked_matA, _O_BYTE, _O_BYTE);
-    ok = gf256mat_inv(matC, matC_inv, _O_BYTE);
+    ok = gf256mat_inv_nonconst(matC, matC_inv, _O_BYTE);
 
     if (!ok)
     {
@@ -256,7 +256,7 @@ void masked_linear_equation_solver_alternative(Masked *masked_vec_r, const Maske
             gf256mat_add(unmasked_matB, unmasked_matB, temp.shares[k], _O_BYTE, _O_BYTE);
         
         
-        ok = gf256mat_inv(unmasked_matB, unmasked_matB_inv, _O_BYTE);
+        ok = gf256mat_inv_nonconst(unmasked_matB, unmasked_matB_inv, _O_BYTE);
 
     }
     masked_gf256mat_prod(masked_vec_temp, masked_matU, _O_BYTE, _O_BYTE, masked_vec_b);

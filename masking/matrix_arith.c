@@ -107,6 +107,74 @@ unsigned gf256mat_inv(uint8_t *A, uint8_t *A_inv, unsigned n) {
     return 1;
 }
 
+// GE non-const version
+static inline
+unsigned gf256mat_gauss_elim_row_echolen_nonconst( uint8_t *mat, unsigned h, unsigned w ) {
+    unsigned r8 = 1;
+
+    for (unsigned i = 0; i < h; i++) {
+        uint8_t *ai = mat + w * i;
+        //unsigned i_start = i-(i&(_BLAS_UNIT_LEN_-1));
+        unsigned i_start = i;
+        if (ai[i] == 0){
+        for (unsigned j = i + 1; j < h; j++) {
+            uint8_t *aj = mat + w * j;
+            // gf256v_conditional_add( ai + i_start, !gf256_is_nonzero(ai[i]), aj + i_start, w - i_start );
+            gf256v_add( ai + i_start, aj + i_start, w - i_start );
+        }
+        }
+        r8 &= gf256_is_nonzero(ai[i]);
+        uint8_t pivot = ai[i];
+        pivot = gf256_inv( pivot );
+        gf256v_mul_scalar( ai + i_start, pivot, w - i_start );
+        for (unsigned j = i + 1; j < h; j++) {
+            uint8_t *aj = mat + w * j;
+            gf256v_madd( aj + i_start, ai + i_start, aj[i], w - i_start );
+        }
+    }
+    return r8;
+}
+
+// non-const version of gf256mat_inv
+unsigned gf256mat_inv_nonconst(uint8_t *A, uint8_t *A_inv, unsigned n) {
+    const unsigned MAX_H = 96;
+    uint8_t aug[MAX_H * (2 * MAX_H)];  // Augmented matrix buffer; ensure n <= MAX_H.
+    unsigned height = n;
+    unsigned width = 2 * n;
+    
+    // Build the augmented matrix [A | I] in row-major order.
+    // Transpose A from column-major to row-major and build I.
+    for (unsigned i = 0; i < height; i++) {
+        uint8_t *row = aug + i * width;
+        // Left half: transpose of A.
+        for (unsigned j = 0; j < n; j++) {
+            row[j] = A[j * n + i];  // A(i,j) = A[j*n + i] since A is in column-major.
+        }
+        // Right half: identity matrix.
+        for (unsigned j = 0; j < n; j++) {
+            row[n + j] = (i == j) ? 1 : 0;
+        }
+    }
+        // Forward elimination: convert augmented matrix to row-echelon form.
+    unsigned ok = gf256mat_gauss_elim_row_echolen_nonconst(aug, height, width);
+    if (!ok) {
+        // A is singular.
+        return 0;
+    }
+    
+    // Back substitution: clear above-diagonal entries.
+    gf256mat_back_substitute_augmented(aug, n);
+    
+    // Extract A_inv from aug and convert it back to column-major order.
+    for (unsigned i = 0; i < n; i++) {
+        for (unsigned j = 0; j < n; j++) {
+            A_inv[j * n + i] = aug[i * width + n + j];
+        }
+    }
+    return 1;
+
+}
+
 void gf256mat_gen_upper(uint8_t *mat, unsigned n) {
     for (unsigned j = 0; j < n; j++) {
         for (unsigned i = 0; i < n; i++) {

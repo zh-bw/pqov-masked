@@ -199,10 +199,34 @@ void timing_randomness(){
     printf("\n* Avg speed randomness: %.1f cycles.\n", (double)(stop-start)/(20000));
 }
 
+void test_matinv(){
+    uint8_t matA[_O_BYTE * _O_BYTE];
+    uint8_t matA_inv[_O_BYTE * _O_BYTE], matT_inv[_O_BYTE * _O_BYTE];
+    unsigned ok;
+    // generate random matrix A
+    randombytes(matA, _O_BYTE * _O_BYTE);
+
+    ok = gf256mat_inv(matA, matA_inv, _O_BYTE);
+    if (ok){
+        printf("Matrix inversion successful.\n");
+        print_matrix(matA_inv, _O_BYTE, _O_BYTE);
+    } else {
+        printf("Matrix is not invertible.\n");
+    }
+
+    ok = gf256mat_inv_nonconst(matA, matT_inv, _O_BYTE);
+    if (ok){
+        printf("Matrix inversion (non-const) successful.\n");
+        print_matrix(matT_inv, _O_BYTE, _O_BYTE);
+    } else {
+        printf("Matrix is not invertible (non-const).\n");
+    }
+}
 
 int main() {
-    // timing_gadgets();
+    timing_gadgets();
     // timing_masked_ov();
-    timing_randomness();
+    // timing_randomness();
+    // test_matinv();
     return 0;
 }
