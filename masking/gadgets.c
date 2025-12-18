@@ -241,7 +241,9 @@ void masked_linear_equation_solver_alternative(Masked *masked_vec_r, const Maske
     uint8_t unmasked_matB[_O_BYTE * _O_BYTE] = {0}, unmasked_matC [_O_BYTE * _O_BYTE], unmasked_matB_inv[_O_BYTE * _O_BYTE];
     Masked masked_vec_temp[_O_BYTE];
 
+    uint8_t repeat = 0;
     while (!ok){
+        repeat++;
         // generate random matrix C and U
         for (int k = 0; k < N_SHARES; k++){
             gf256mat_gen(masked_matC.shares[k], _O_BYTE);
@@ -256,7 +258,11 @@ void masked_linear_equation_solver_alternative(Masked *masked_vec_r, const Maske
             gf256mat_add(unmasked_matB, unmasked_matB, temp.shares[k], _O_BYTE, _O_BYTE);
         
         
-        ok = gf256mat_inv_nonconst(unmasked_matB, unmasked_matB_inv, _O_BYTE);
+        ok = gf256mat_inv(unmasked_matB, unmasked_matB_inv, _O_BYTE);
+        if (repeat > 16){
+            printf("Matrix is not invertible after 16 retries, exiting...\n");
+            return;
+        }
 
     }
     masked_gf256mat_prod(masked_vec_temp, masked_matU, _O_BYTE, _O_BYTE, masked_vec_b);
