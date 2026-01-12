@@ -2,7 +2,7 @@
 
 This is the C implementation of masked UOV (Unbalanced Oil and Vinegar), a post-quantum cryptographic signature scheme with masking countermeasures against side-channel attacks.
 
-It is the artifact of the paper "Masked Solving of Linear Equations System and Application to UOV Signatures" (IACR CHES 2026)
+It is the artifact of the paper "Masked Solving of Linear Equations System and Application to UOV Signatures" (IACR TCHES 2026)
 
 The unmasked part is built upon the [UOV reference implementation](https://github.com/pqov/pqov).
 
@@ -22,3 +22,5 @@ For performance test, run
 python3 run_benchmark.py
 ```
 and the results appear in bench_res.txt
+
+For randomness usage measurement, turn on #define COUNT in 'src/params.h'

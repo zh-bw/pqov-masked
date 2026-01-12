@@ -157,5 +157,5 @@
 // #define RNGXOR // enable for xorshift PRNG
 
 // randomness counting
-#define COUNT  // disable this when measuring performance
+// #define COUNT  // disable this when measuring performance
 #endif

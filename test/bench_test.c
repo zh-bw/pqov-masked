@@ -257,8 +257,8 @@ void test_rand_usage(){
 
 
 int main() {
-    // timing_gadgets();
-    // timing_masked_ov();
-    test_rand_usage();
+    timing_gadgets();
+    timing_masked_ov();
+    // test_rand_usage();
     return 0;
 }
