@@ -153,8 +153,9 @@
 #endif
 #define N_SHARES (MASKING_ORDER+1)
 
-// performance measurement
-// #define OpesnSSL_RAND // enable for OpenSSL randombytes
-#define RNGXOR // enable for XOR randombytes
+// PRNG options, default to rand()
+// #define RNGXOR // enable for xorshift PRNG
 
+// randomness counting
+#define COUNT  // disable this when measuring performance
 #endif

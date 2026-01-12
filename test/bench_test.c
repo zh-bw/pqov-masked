@@ -19,6 +19,7 @@
 
 #define ITER 500
 uint64_t start, stop;
+double kilobytes = 0;
 
 void timing_gadgets(){
     Masked_matrix masked_matA, masked_matD;
@@ -185,48 +186,79 @@ void timing_masked_ov(){
 
     puts("\n*********************************************************\n");
 }
-
-void timing_randomness(){
-    uint8_t r;
-    r = rand8();
-
-    start = cpucycles();
-    for (int i = 0; i < 20000; i++){
-        r = rand8();
+void test_rand_usage(){
+    Masked_matrix masked_matA, masked_matD;
+    uint8_t unmasked_matA[_O_BYTE*_O_BYTE], matC[_O_BYTE*_O_BYTE], unmasked_matD[_O_BYTE*_O_BYTE];
+    uint8_t unmasked_matA_inv[_O_BYTE*_O_BYTE], unmasked_matD_inv[_O_BYTE*_O_BYTE];
+    uint8_t r[_O_BYTE*N_SHARES];
+    unsigned ok = 0;
+    Masked masked_vec_b[_O_BYTE];
+    for (int i = 0; i < _O_BYTE; i++){
+        for (int k = 0; k < N_SHARES; k++){
+            randombytes(&masked_vec_b[i].shares[k], 1);
+        }
     }
-    stop = cpucycles();
-    printf("\n* ------------------- Timing randomness -------------------\n");
-    printf("\n* Avg speed randomness: %.1f cycles.\n", (double)(stop-start)/(20000));
+
+    Masked a[_O_BYTE], b[_O_BYTE];
+    for (int i = 0; i < _O_BYTE; i++) {
+        for (int j = 0; j < N_SHARES; j++) {
+            randombytes(&a[i].shares[j], 1);
+
+            randombytes(&b[i].shares[j], 1);
+        }
+    }
+
+    // Try repeatedly until the combined (unmasked) matrix is invertible.
+    do {
+        for (int i = 0; i < N_SHARES; i++) {
+            randombytes(masked_matA.shares[i], _O_BYTE * _O_BYTE);
+        }
+        memcpy(unmasked_matA, masked_matA.shares[0], _O_BYTE * _O_BYTE);
+        for (int i = 1; i < N_SHARES; i++) {
+            gf256mat_add(unmasked_matA, unmasked_matA, masked_matA.shares[i], _O_BYTE, _O_BYTE);
+        }
+        ok = gf256mat_inv(unmasked_matA, unmasked_matA_inv, _O_BYTE);
+    } while (!ok);
+    Masked masked_vec_r[_O_BYTE];
+    printf("\n* ------------------- Randomness consumption -------------------\n");
+    printf("Masking order: %d\n", MASKING_ORDER);
+    
+    count_rand = 0;
+
+    for (int i = 0; i < 10; i++)
+        masked_linear_equation_solver_rankcheck(masked_vec_r, masked_matA, masked_vec_b);
+    
+    #ifdef COUNT
+    printf("\nrand8() was called %.1f times in SecLinSolveA2M\n",
+           (double)count_rand / 10);
+    kilobytes = (double)count_rand / 1024.0;
+    printf("%.1f kb of randomness were used\n", kilobytes);
+    #else
+    printf("COUNT is not enabled, so no counter.\n");
+    #endif
+
+    #ifdef COUNT
+    count_rand = 0; // reset counter
+    #endif
+    for (int i = 0; i < 10; i++)
+        masked_linear_equation_solver_alternative(masked_vec_r, masked_matA, masked_vec_b);
+
+
+    #ifdef COUNT
+    printf("\nrand8() was called %.1f times in SecLinSolveMatMult\n",
+           (double)count_rand / 10);
+    kilobytes = (double)count_rand / 1024.0;
+    printf("%.1f kb of randomness were used\n", kilobytes);
+    #else
+    printf("COUNT is not enabled, so no counter.\n");
+    #endif
 }
 
-void test_matinv(){
-    uint8_t matA[_O_BYTE * _O_BYTE];
-    uint8_t matA_inv[_O_BYTE * _O_BYTE], matT_inv[_O_BYTE * _O_BYTE];
-    unsigned ok;
-    // generate random matrix A
-    randombytes(matA, _O_BYTE * _O_BYTE);
 
-    ok = gf256mat_inv(matA, matA_inv, _O_BYTE);
-    if (ok){
-        printf("Matrix inversion successful.\n");
-        print_matrix(matA_inv, _O_BYTE, _O_BYTE);
-    } else {
-        printf("Matrix is not invertible.\n");
-    }
-
-    ok = gf256mat_inv_nonconst(matA, matT_inv, _O_BYTE);
-    if (ok){
-        printf("Matrix inversion (non-const) successful.\n");
-        print_matrix(matT_inv, _O_BYTE, _O_BYTE);
-    } else {
-        printf("Matrix is not invertible (non-const).\n");
-    }
-}
 
 int main() {
-    timing_gadgets();
+    // timing_gadgets();
     // timing_masked_ov();
-    // timing_randomness();
-    // test_matinv();
+    test_rand_usage();
     return 0;
 }

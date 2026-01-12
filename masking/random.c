@@ -34,17 +34,6 @@ return r;
 #endif
 }
 
-
-uint16_t rand16(){
-  return (uint16_t)rand32()&(0xFFFF);
-}
-
-uint64_t rand64(){
-
-  return ((uint64_t)rand32() << 32) + (uint64_t)rand32();
-}
-
-
 uint8_t rand8(){
   #if defined(RNGXOR)
   return (uint8_t)(rand32() & 0xFF);

@@ -52,6 +52,7 @@ void gf256_arithmetic_refresh(Masked *z, Masked *a);
 /// @param[in] n_vec_byte - the number of elements in the vector
 void vec_arithmetic_refresh(Masked *r, Masked *a, unsigned n_vec_byte);
 
+void vec_linear_arithmetic_refresh(Masked *r, unsigned n_vec_byte);
 
 /**
  * @brief Computes the product of a GF(256) matrix and a masked vector.

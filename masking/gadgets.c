@@ -81,6 +81,13 @@ void vec_arithmetic_refresh(Masked *r, Masked *a, unsigned n_vec_byte){
     }
 }
 
+void vec_linear_arithmetic_refresh(Masked *r, unsigned n_vec_byte){
+    // Apply linear arithmetic refresh to each element of the vector
+    for (int i = 0; i < n_vec_byte; i++) {
+        gf256_linear_arithmetic_refresh(&r[i]);
+    }
+}
+
 
 void half_masked_gf256mat_prod(Masked *masked_c,
                                const uint8_t *matA,
@@ -174,18 +181,23 @@ void masked_linear_equation_solver_rankcheck(Masked *masked_vec_r, const Masked_
     // uint8_t masked_vec_temp[_O_BYTE * N_SHARES];
     
     half_masked_gf256mat_prod(masked_vec_r, matU.shares[0], _O_BYTE, _O_BYTE, masked_vec_b);
+    vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
 
-    for (int i = 1; i < N_SHARES; i++)
+    for (int i = 1; i < N_SHARES; i++){
         half_masked_gf256mat_prod(masked_vec_r, matU.shares[i], _O_BYTE, _O_BYTE, masked_vec_r);
+        vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
+    }
 
     
     // O(nm^2)
     half_masked_gf256mat_prod(masked_vec_r, matC_inv, _O_BYTE, _O_BYTE, masked_vec_r);
-
+    vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
 
     // O(n^2 * m^2)
-    for (int i = N_SHARES - 1; i >= 0; i--)
+    for (int i = N_SHARES - 1; i >= 0; i--){
         half_masked_gf256mat_prod(masked_vec_r, matR.shares[i], _O_BYTE, _O_BYTE, masked_vec_r);
+        vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
+    }
 
 }
 
@@ -212,18 +224,23 @@ unsigned masked_linear_equation_solver(Masked *masked_vec_r, const Masked_matrix
     }
 
     half_masked_gf256mat_prod(masked_vec_r, matU.shares[0], _O_BYTE, _O_BYTE, masked_vec_b);
+    vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
 
-    for (int i = 1; i < N_SHARES; i++)
+    for (int i = 1; i < N_SHARES; i++){
         half_masked_gf256mat_prod(masked_vec_r, matU.shares[i], _O_BYTE, _O_BYTE, masked_vec_r);
+        vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
+    }
 
     
     // O(nm^2)
     half_masked_gf256mat_prod(masked_vec_r, matC_inv, _O_BYTE, _O_BYTE, masked_vec_r);
-
+    vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
 
     // O(n^2 * m^2)
-    for (int i = N_SHARES - 1; i >= 0; i--)
+    for (int i = N_SHARES - 1; i >= 0; i--){
         half_masked_gf256mat_prod(masked_vec_r, matR.shares[i], _O_BYTE, _O_BYTE, masked_vec_r);
+        vec_linear_arithmetic_refresh(masked_vec_r, _O_BYTE);
+    }
 
 
     return ok;

@@ -110,7 +110,7 @@ EXE = bench_test sign_test
 # Macro
 ORDER=1
 RNG=2
-MACRO = -D MASKING_ORDER=$(ORDER) -D RNG_MODE=$(RNG)
+MACRO = -D MASKING_ORDER=$(ORDER)
 
 # Source
 SRC := $(wildcard $(SRC_EXT_DIRS)/*.c) \
