@@ -223,7 +223,6 @@ void test_rand_usage(){
     printf("\n* ------------------- Randomness consumption -------------------\n");
     printf("Masking order: %d\n", MASKING_ORDER);
     
-    count_rand = 0;
 
     for (int i = 0; i < 10; i++)
         masked_linear_equation_solver_rankcheck(masked_vec_r, masked_matA, masked_vec_b);
