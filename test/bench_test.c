@@ -32,7 +32,6 @@ void timing_gadgets(){
     for (int i = 0; i < _O_BYTE; i++){
         for (int k = 0; k < N_SHARES; k++){
             randombytes(&masked_vec_b[i].shares[k], 1);
-            // masked_vec_b[i].shares[k] = rand8();
         }
     }
 
@@ -41,8 +40,6 @@ void timing_gadgets(){
         for (int j = 0; j < N_SHARES; j++) {
             randombytes(&a[i].shares[j], 1);
             randombytes(&b[i].shares[j], 1);
-            // a[i].shares[j] = rand8();
-            // b[i].shares[j] = rand8();
         }
     }
 
@@ -61,7 +58,6 @@ void timing_gadgets(){
         // & gf256mat_inv(unmasked_matD, unmasked_matD_inv, _O_BYTE);
     } while (!ok);
     puts("\n**************** Timing masked linear equations solver *******************\n");
-    // printf("\n* ------------------- Timing masked linear equations solver -------------------\n");
     Masked masked_vec_r[_O_BYTE];
     printf("Masking order: %d\n", MASKING_ORDER);
     
@@ -78,7 +74,6 @@ void timing_gadgets(){
         masked_linear_equation_solver_alternative(masked_vec_r, masked_matA, masked_vec_b);
     }
     stop = cpucycles();
-    // printf("\n* ------------------- Timing masked linear equations solver alternative -------------------\n");
     printf("\n* Avg speed masked linear equations solver via additive shares: %.1f cycles.\n", (double)(stop-start)/(ITER ));
     puts("\n*********************************************************\n");
 }
@@ -125,7 +120,7 @@ void convert_to_Masked(Masked *masked_r, uint8_t *r, int length)
 
 
 void timing_masked_ov(){
-        // generate keypair
+    // generate keypair
     cpk_t pk;
     sk_t sk;
 
@@ -140,22 +135,7 @@ void timing_masked_ov(){
     uint8_t masked_sk_seed[LEN_SKSEED * N_SHARES];
     random_boolean_mask(masked_sk_seed, sk_seed, LEN_SKSEED);
 
-    printf("\n* ------------------- Timing unmasked ov-pkc keygen -------------------\n");
-    start = cpucycles();
-    for (int i = 0; i < 50; i++) {
-        generate_keypair_pkc(&pk, &sk, sk_seed);    
-    }
-    stop = cpucycles();
-    printf("\n* Avg speed unmasked keygen: %.1f cycles.\n", (double)(stop-start)/(50));
-
-    puts("\n****************** Timing masked ov-pkc ******************\n");
-    printf("Masking order: %d\n", MASKING_ORDER);
-    start = cpucycles();
-    for (int i = 0; i < ITER; i++) {
-        masked_generate_keypair_pkc(&pk, &masked_sk, masked_sk_seed);
-    }
-    stop = cpucycles();
-    printf("\n* Avg speed masked keygen: %.1f cycles.\n", (double)(stop-start)/(ITER));
+    masked_generate_keypair_pkc(&pk, &masked_sk, masked_sk_seed);
     // generate message
     unsigned char m[53];
     unsigned long long mlen = 53;
@@ -173,8 +153,8 @@ void timing_masked_ov(){
     stop = cpucycles();
     printf("\n* Avg speed unmasked signing: %.1f cycles.\n", (double)(stop-start)/(50));
 
-    // printf("\n* ------------------- Timing masked ov-pkc -------------------\n");
-    // printf("Masking order: %d\n", MASKING_ORDER);
+    printf("\n* ------------------- Timing masked ov-pkc sign -------------------\n");
+    printf("Masking order: %d\n", MASKING_ORDER);
     Masked masked_signature[_PUB_N_BYTE + _SALT_BYTE];
     
     start = cpucycles();
