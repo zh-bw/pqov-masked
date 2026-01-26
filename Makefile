@@ -109,7 +109,6 @@ EXE = bench_test sign_test
 
 # Macro
 ORDER=1
-RNG=2
 MACRO = -D MASKING_ORDER=$(ORDER)
 
 # Source

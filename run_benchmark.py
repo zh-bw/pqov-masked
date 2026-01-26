@@ -12,7 +12,7 @@ MAX_ORDER = 6
 if not VERBOSE_COMPILE:
 	REDIRECT=">/dev/null"
 with open(PATH,'a') as f:
-  for PARAM in range(3, 4):
+  for PARAM in range(3, 6):
     if PARAM == 3:
         variant = "UOV-I"
     elif PARAM == 4:
