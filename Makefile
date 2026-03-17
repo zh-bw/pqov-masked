@@ -43,7 +43,7 @@ MASKING_DIR = ./masking
 TEST_DIR = ./test
 
 CFLAGS +=  -w -Wall -Wextra -Wpedantic -Wredundant-decls \
-  -Wshadow -Wpointer-arith -O3 -Werror -fomit-frame-pointer
+  -Wshadow -Wpointer-arith -O3 -Werror -Wno-error=incompatible-pointer-types -fomit-frame-pointer
 
 
 ifdef PARAM
@@ -108,8 +108,18 @@ endif
 EXE = bench_test sign_test
 
 # Macro
-ORDER=1
+ORDER ?= 3
 MACRO = -D MASKING_ORDER=$(ORDER)
+
+# PRNG Option: use 'make RNG=XOR' to enable xorshift
+ifeq ($(RNG), XOR)
+  MACRO += -D RNGXOR
+endif
+
+# Randomness Counting: use 'make COUNT=1' to enable
+ifeq ($(COUNT), 1)
+  MACRO += -D COUNT
+endif
 
 # Source
 SRC := $(wildcard $(SRC_EXT_DIRS)/*.c) \

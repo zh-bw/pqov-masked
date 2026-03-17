@@ -57,9 +57,9 @@ void timing_gadgets(){
         ok = gf256mat_inv(unmasked_matA, unmasked_matA_inv, _O_BYTE); 
         // & gf256mat_inv(unmasked_matD, unmasked_matD_inv, _O_BYTE);
     } while (!ok);
-    puts("\n**************** Timing masked linear equations solver *******************\n");
+    puts("\n**************** Timing masked linear equations solver *******************");
     Masked masked_vec_r[_O_BYTE];
-    printf("Masking order: %d\n", MASKING_ORDER);
+    // printf("Masking order: %d\n", MASKING_ORDER);
     
 
     start = cpucycles();
@@ -67,14 +67,14 @@ void timing_gadgets(){
         masked_linear_equation_solver_rankcheck(masked_vec_r, masked_matA, masked_vec_b);
     }
     stop = cpucycles();
-    printf("\n* Avg speed masked linear equations solver via multiplicative shares %.1f cycles.\n", (double)(stop-start)/(ITER));
+    printf("\n* Avg speed masked linear equations solver via multiplicative shares %.1f cycles.\n", (double)(stop-start)/(ITER*1000));
 
     start = cpucycles();
     for (int i = 0; i < ITER; i++) {
         masked_linear_equation_solver_alternative(masked_vec_r, masked_matA, masked_vec_b);
     }
     stop = cpucycles();
-    printf("\n* Avg speed masked linear equations solver via additive shares: %.1f cycles.\n", (double)(stop-start)/(ITER ));
+    printf("\n* Avg speed masked linear equations solver via additive shares: %.1f cycles.\n", (double)(stop-start)/(ITER*1000));
     puts("\n*********************************************************\n");
 }
 
@@ -151,10 +151,10 @@ void timing_masked_ov(){
         ov_sign(signature, &sk, m, mlen);
     }
     stop = cpucycles();
-    printf("\n* Avg speed unmasked signing: %.1f cycles.\n", (double)(stop-start)/(50));
+    printf("\n* Avg speed unmasked signing: %.1f cycles.\n", (double)(stop-start)/(50*1000));
 
     printf("\n* ------------------- Timing masked ov-pkc sign -------------------\n");
-    printf("Masking order: %d\n", MASKING_ORDER);
+    // printf("Masking order: %d\n", MASKING_ORDER);
     Masked masked_signature[_PUB_N_BYTE + _SALT_BYTE];
     
     start = cpucycles();
@@ -162,7 +162,7 @@ void timing_masked_ov(){
         masked_ov_sign(signature, &masked_sk, m, mlen);
     }
     stop = cpucycles();
-    printf("\n* Avg speed masked signing: %.1f cycles.\n", (double)(stop-start)/(ITER));
+    printf("\n* Avg speed masked signing: %.1f cycles.\n", (double)(stop-start)/(ITER*1000));
 
     puts("\n*********************************************************\n");
 }
@@ -201,7 +201,7 @@ void test_rand_usage(){
     } while (!ok);
     Masked masked_vec_r[_O_BYTE];
     printf("\n* ------------------- Randomness consumption -------------------\n");
-    printf("Masking order: %d\n", MASKING_ORDER);
+    // printf("Masking order: %d\n", MASKING_ORDER);
     
 
     for (int i = 0; i < 10; i++)
@@ -236,8 +236,16 @@ void test_rand_usage(){
 
 
 int main() {
-    // timing_gadgets();
-    // timing_masked_ov();
-    // test_rand_usage();
+#if defined(RNGXOR)
+    // Scenario 1: Benchmarking with Xorshift enabled
+    timing_gadgets();
+#elif defined(COUNT)
+    // Scenario 2: Randomness usage test
+    test_rand_usage();
+#else
+    // Scenario 3: Default (Standard PRNG timing)
+    timing_gadgets();
+    timing_masked_ov(); 
+#endif
     return 0;
 }
